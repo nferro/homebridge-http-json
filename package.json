@@ -1,0 +1,80 @@
+{
+  "_args": [
+    [
+      "homebridge-http-thermostat",
+      ""
+    ],
+    [
+      "homebridge-http-thermostat",
+      ""
+    ]
+  ],
+  "_from": "homebridge-http-thermostat@*",
+  "_id": "homebridge-http-thermostat@0.0.3",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/homebridge-http-thermostat",
+  "_nodeVersion": "5.1.1",
+  "_npmUser": {
+    "email": "luigifcruz@me.com",
+    "name": "luigifcruz"
+  },
+  "_npmVersion": "3.3.12",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "homebridge-http-thermostat",
+    "raw": "homebridge-http-thermostat",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "*",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_shrinkwrap": null,
+  "_spec": "homebridge-http-thermostat",
+  "_where": "",
+  "author": {
+    "email": "luigifcruz@me.com",
+    "name": "Luigi Freitas"
+  },
+  "bugs": {
+    "url": "https://github.com/luigifreitas/homebridge-http-thermostat/issues"
+  },
+  "dependencies": {
+    "superagent": "^1.6.1"
+  },
+  "description": "homebridge-http-thermostat",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "678b28836725baefa1f318dfb24436d50f112c96",
+    "tarball": "http://registry.npmjs.org/homebridge-http-thermostat/-/homebridge-http-thermostat-0.0.3.tgz"
+  },
+  "engines": {
+    "homebridge": ">=0.2.0",
+    "node": ">=0.12.0"
+  },
+  "homepage": "https://github.com/luigifreitas/homebridge-http-thermostat",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "luigifcruz",
+      "email": "luigifcruz@me.com"
+    }
+  ],
+  "name": "homebridge-http-thermostat",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luigifreitas/homebridge-http-thermostat.git"
+  },
+  "scripts": {},
+  "version": "0.0.5"
+}
