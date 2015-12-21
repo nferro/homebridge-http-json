@@ -28,9 +28,6 @@ HttpAccessory.prototype = {
       }
     });
   },
-  getTemperatureUnits: function(callback) {
-    return return Characteristic.TemperatureDisplayUnits.CELSIUS;
-  },
   getHumidity: function(callback) {
     console.log("Humidity Triggered");
     superagent.get(this.humidity_url).end(function(err, res){
@@ -60,10 +57,6 @@ HttpAccessory.prototype = {
       temperatureService
         .getCharacteristic(Characteristic.CurrentTemperature)
         .on('get', this.getTemperature.bind(this));
-
-      temperatureService
-        .getCharacteristic(Characteristic.TemperatureDisplayUnits)
-        .on('get', this.getTemperatureUnits.bind(this));
 
       humiditySensor = new Service.HumiditySensor();
 
