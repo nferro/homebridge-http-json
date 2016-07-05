@@ -70,11 +70,10 @@
   ],
   "name": "homebridge-http-json",
   "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nferro/homebridge-http-json.git"
   },
   "scripts": {},
-  "version": "0.0.2"
+  "version": "0.0.6"
 }

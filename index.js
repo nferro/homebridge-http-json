@@ -58,13 +58,14 @@ HttpAccessory.prototype = {
 
       for (var i = this.sensors.length - 1; i >= 0; i--) {
         let sensor = this.sensors[i];
+        let url = this.url;
         this.log("Setting up: " + sensor.name);
 
         newService = new Service[sensor.service](sensor.name);
         newService.getCharacteristic(Characteristic[sensor.caractheristic])
           .on('get', function(callback) {
             console.log(sensor.name + " Triggered");
-            superagent.get("http://192.168.1.85/readings").end(function(err, res){
+            superagent.get(url).end(function(err, res){
               if (res && res.body[sensor.field]) {
                 callback(null, res.body[sensor.field]);
               } else {
