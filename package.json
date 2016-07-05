@@ -1,29 +1,29 @@
 {
   "_args": [
     [
-      "homebridge-http-thermostat",
+      "homebridge-http-json",
       ""
     ],
     [
-      "homebridge-http-thermostat",
+      "homebridge-http-json",
       ""
     ]
   ],
-  "_from": "homebridge-http-thermostat@*",
-  "_id": "homebridge-http-thermostat@0.0.3",
+  "_from": "homebridge-http-json@*",
+  "_id": "homebridge-http-json@0.0.1",
   "_inCache": true,
   "_installable": true,
-  "_location": "/homebridge-http-thermostat",
+  "_location": "/homebridge-http-json",
   "_nodeVersion": "5.1.1",
   "_npmUser": {
-    "email": "luigifcruz@me.com",
-    "name": "luigifcruz"
+    "email": "mail@nunoferro.com",
+    "name": "ferro"
   },
   "_npmVersion": "3.3.12",
   "_phantomChildren": {},
   "_requested": {
-    "name": "homebridge-http-thermostat",
-    "raw": "homebridge-http-thermostat",
+    "name": "homebridge-http-json",
+    "raw": "homebridge-http-json",
     "rawSpec": "",
     "scope": null,
     "spec": "*",
@@ -33,30 +33,30 @@
     "#USER"
   ],
   "_shrinkwrap": null,
-  "_spec": "homebridge-http-thermostat",
+  "_spec": "homebridge-http-json",
   "_where": "",
   "author": {
-    "email": "luigifcruz@me.com",
-    "name": "Luigi Freitas"
+    "email": "mail@nunoferro.com",
+    "name": "Nuno Ferro"
   },
   "bugs": {
-    "url": "https://github.com/luigifreitas/homebridge-http-thermostat/issues"
+    "url": "https://github.com/nferro/homebridge-http-json/issues"
   },
   "dependencies": {
     "superagent": "^1.6.1"
   },
-  "description": "homebridge-http-thermostat",
+  "description": "homebridge-http-json",
   "devDependencies": {},
   "directories": {},
   "dist": {
     "shasum": "678b28836725baefa1f318dfb24436d50f112c96",
-    "tarball": "http://registry.npmjs.org/homebridge-http-thermostat/-/homebridge-http-thermostat-0.0.3.tgz"
+    "tarball": "http://registry.npmjs.org/homebridge-http-json/-/homebridge-http-json-0.0.3.tgz"
   },
   "engines": {
     "homebridge": ">=0.2.0",
     "node": ">=0.12.0"
   },
-  "homepage": "https://github.com/luigifreitas/homebridge-http-thermostat",
+  "homepage": "https://github.com/nferro/homebridge-http-json",
   "keywords": [
     "homebridge-plugin"
   ],
@@ -64,17 +64,17 @@
   "main": "index.js",
   "maintainers": [
     {
-      "name": "luigifcruz",
-      "email": "luigifcruz@me.com"
+      "name": "Nuno Ferro",
+      "email": "mail@nunoferro.com"
     }
   ],
-  "name": "homebridge-http-thermostat",
+  "name": "homebridge-http-json",
   "optionalDependencies": {},
   "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luigifreitas/homebridge-http-thermostat.git"
+    "url": "git+https://github.com/nferro/homebridge-http-json.git"
   },
   "scripts": {},
-  "version": "0.0.7"
+  "version": "0.0.2"
 }

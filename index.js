@@ -4,35 +4,35 @@ var superagent = require('superagent');
 module.exports = function(homebridge){
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-http-thermostat", "http-thermostat", HttpAccessory);
+  homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
 }
 
 function HttpAccessory(log, config) {
 	this.log = log;
 
-	this.temperature_url = config["temperature_url"];
-	this.humidity_url = config["humidity_url"];
+	this.url = config["url"];
 	this.service = config["service"];
 	this.name = config["name"];
+  this.sensors = config["sensors"];
 }
 
 HttpAccessory.prototype = {
   getTemperature: function(callback) {
-    console.log("Temperature Triggered");
+    this.log("Temperature Triggered");
 
-    superagent.get(this.temperature_url).end(function(err, res){
-      if (res.body.confirmation) {
-        callback(null, res.body.result);
+    superagent.get(this.url).end(function(err, res){
+      if (res.body.temperature) {
+        callback(null, res.body['temperature']);
       } else {
         callback(null, null);
       }
     });
   },
   getHumidity: function(callback) {
-    console.log("Humidity Triggered");
-    superagent.get(this.humidity_url).end(function(err, res){
-      if (res.body.confirmation) {
-        callback(null, res.body.result);
+    this.log("Humidity Triggered");
+    superagent.get(this.url).end(function(err, res){
+      if (res.body.humidity) {
+        callback(null, res.body['humidity']);
       } else {
         callback(null, null);
       }
@@ -44,27 +44,38 @@ HttpAccessory.prototype = {
 	},
 
 	getServices: function() {
+    this.log("getServices")
     var informationService = new Service.AccessoryInformation();
 
     informationService
-      .setCharacteristic(Characteristic.Manufacturer, "ACME")
-      .setCharacteristic(Characteristic.Model, "Mark I")
+      .setCharacteristic(Characteristic.Manufacturer, "Nuno Ferro")
+      .setCharacteristic(Characteristic.Model, "HTTP JSON")
       .setCharacteristic(Characteristic.SerialNumber, "ACME#1")
 
 		if (this.service == "Thermostat") {
-      temperatureService = new Service.TemperatureSensor("Bedroom Temperature");
 
-      temperatureService
-        .getCharacteristic(Characteristic.CurrentTemperature)
-        .on('get', this.getTemperature.bind(this));
+      var services = [informationService];
 
-      humiditySensor = new Service.HumiditySensor();
+      for (var i = this.sensors.length - 1; i >= 0; i--) {
+        let sensor = this.sensors[i];
+        this.log("Setting up: " + sensor.name);
 
-      humiditySensor
-        .getCharacteristic(Characteristic.CurrentRelativeHumidity)
-        .on('get', this.getHumidity.bind(this));
+        newService = new Service[sensor.service](sensor.name);
+        newService.getCharacteristic(Characteristic[sensor.caractheristic])
+          .on('get', function(callback) {
+            console.log(sensor.name + " Triggered");
+            superagent.get("http://192.168.1.85/readings").end(function(err, res){
+              if (res && res.body[sensor.field]) {
+                callback(null, res.body[sensor.field]);
+              } else {
+                callback(null, null);
+              }
+            });
+          })
+        services.push(newService);
+      }
 
-			return [informationService, temperatureService, humiditySensor];
+			return services;
 		}
 	}
 };
