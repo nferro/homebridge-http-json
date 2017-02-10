@@ -4,4 +4,7 @@ Simple HTTP JSON client for [Homebridge HomeKit](https://github.com/nfarina/home
 
 You can refer to `config-section.json` to see how to set it up on you Homebridge `config.json`.
 
-Forked and envolved from [homebridge-http-thermostat](https://github.com/luigifreitas/homebridge-http-thermostat)
+Forked and envolved 
+  from [homebridge-http-thermostat](https://github.com/luigifreitas/homebridge-http-thermostat) and
+  from [homebridge-http-temperature](https://github.com/metbosch/homebridge-http-temperature)
+  

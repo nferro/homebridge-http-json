@@ -1,10 +1,14 @@
 var Service, Characteristic;
-var superagent = require('superagent');
+var request = require('request');
+
+const DEF_MIN_TEMPERATURE = -100,
+      DEF_MAX_TEMPERATURE = 100,
+      DEF_TIMEOUT = 5000;
 
 module.exports = function(homebridge){
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
+	Service = homebridge.hap.Service;
+	Characteristic = homebridge.hap.Characteristic;
+	homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
 }
 
 function HttpAccessory(log, config) {
@@ -13,70 +17,70 @@ function HttpAccessory(log, config) {
 	this.url = config["url"];
 	this.service = config["service"];
 	this.name = config["name"];
-  this.sensors = config["sensors"];
+	this.sensors = config["sensors"];
 }
 
 HttpAccessory.prototype = {
-  getTemperature: function(callback) {
-    this.log("Temperature Triggered");
-
-    superagent.get(this.url).end(function(err, res){
-      if (res.body.temperature) {
-        callback(null, res.body['temperature']);
-      } else {
-        callback(null, null);
-      }
-    });
-  },
-  getHumidity: function(callback) {
-    this.log("Humidity Triggered");
-    superagent.get(this.url).end(function(err, res){
-      if (res.body.humidity) {
-        callback(null, res.body['humidity']);
-      } else {
-        callback(null, null);
-      }
-    });
-  },
 	identify: function(callback) {
 		this.log("Identify requested!");
 		callback();
 	},
 
 	getServices: function() {
-    this.log("getServices")
-    var informationService = new Service.AccessoryInformation();
+		this.log("getServices")
+		var informationService = new Service.AccessoryInformation();
 
-    informationService
-      .setCharacteristic(Characteristic.Manufacturer, "Nuno Ferro")
-      .setCharacteristic(Characteristic.Model, "HTTP JSON")
-      .setCharacteristic(Characteristic.SerialNumber, "ACME#1")
+		informationService
+			.setCharacteristic(Characteristic.Manufacturer, "Nuno Ferro")
+			.setCharacteristic(Characteristic.Model, "HTTP JSON")
+			.setCharacteristic(Characteristic.SerialNumber, "ACME#1")
 
 		if (this.service == "Thermostat") {
 
-      var services = [informationService];
+			var services = [informationService];
 
-      for (var i = this.sensors.length - 1; i >= 0; i--) {
-        let sensor = this.sensors[i];
-        let url = this.url;
-        this.log("Setting up: " + sensor.name);
+			for (var i = this.sensors.length - 1; i >= 0; i--) {
+			
+			    var ops = {
+					  uri:    this.url,
+					  method: "GET",
+					  timeout: DEF_TIMEOUT
+                };
+				let sensor = this.sensors[i];
 
-        newService = new Service[sensor.service](sensor.name);
-        newService.getCharacteristic(Characteristic[sensor.caractheristic])
-          .on('get', function(callback) {
-            console.log(sensor.name + " Triggered");
-            superagent.get(url).end(function(err, res){
-              if (res && res.body[sensor.field]) {
-                callback(null, res.body[sensor.field]);
-              } else {
-                callback(null, null);
-              }
-            });
-          })
-        services.push(newService);
-      }
+				this.log("Setting up: " + sensor.name);
+
+				newService = new Service[sensor.service](sensor.name);
+				newService
+				.getCharacteristic(Characteristic[sensor.caractheristic])
+				.on('get', function(callback) {
+					request(ops, (error, res, body) => {
+						var value = null;
+						if (error) {
+							console.log('HTTP bad response (' + ops.uri + '): ' + error.message);
+						} else {
+							try {
+								var chunk = JSON.parse(body)
+								value = eval("chunk." + sensor.field);
+								if (value < this.minTemperature || value > this.maxTemperature || isNaN(value)) {
+									throw "Invalid value received";
+								}
+								// console.log('HTTP successful response: ' + body);
+								console.log(sensor.name + " value : " + value);
+							} catch (parseErr) {
+								console.log('Error processing received information: ' + parseErr.message);
+								error = parseErr;
+							}
+						}
+						callback(error, value);
+					});
+				})
+				services.push(newService);
+			}
 
 			return services;
 		}
 	}
 };
+
+
