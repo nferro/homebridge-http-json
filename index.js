@@ -1,82 +1,57 @@
 var Service, Characteristic;
 var superagent = require('superagent');
 
-module.exports = function(homebridge){
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
+module.exports = function(homebridge) {
+    Service = homebridge.hap.Service;
+    Characteristic = homebridge.hap.Characteristic;
+    homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
 }
 
 function HttpAccessory(log, config) {
-	this.log = log;
+    this.log = log;
 
-	this.url = config["url"];
-	this.service = config["service"];
-	this.name = config["name"];
-  this.sensors = config["sensors"];
+    this.url = config["url"];
+    this.service = config["service"];
+    this.name = config["name"];
+    this.sensors = config["sensors"];
+    this.log(config)
 }
 
 HttpAccessory.prototype = {
-  getTemperature: function(callback) {
-    this.log("Temperature Triggered");
+    getServices: function() {
+        this.log("getServices")
+        var informationService = new Service.AccessoryInformation();
 
-    superagent.get(this.url).end(function(err, res){
-      if (res.body.temperature) {
-        callback(null, res.body['temperature']);
-      } else {
-        callback(null, null);
-      }
-    });
-  },
-  getHumidity: function(callback) {
-    this.log("Humidity Triggered");
-    superagent.get(this.url).end(function(err, res){
-      if (res.body.humidity) {
-        callback(null, res.body['humidity']);
-      } else {
-        callback(null, null);
-      }
-    });
-  },
-	identify: function(callback) {
-		this.log("Identify requested!");
-		callback();
-	},
+        informationService
+            .setCharacteristic(Characteristic.Manufacturer, "Nuno Ferro")
+            .setCharacteristic(Characteristic.Model, "HTTP JSON")
+            .setCharacteristic(Characteristic.SerialNumber, "ACME#1")
 
-	getServices: function() {
-    this.log("getServices")
-    var informationService = new Service.AccessoryInformation();
+        this.log("Load Service: " + this.service)
+        var services = [informationService];
 
-    informationService
-      .setCharacteristic(Characteristic.Manufacturer, "Nuno Ferro")
-      .setCharacteristic(Characteristic.Model, "HTTP JSON")
-      .setCharacteristic(Characteristic.SerialNumber, "ACME#1")
+        for (var i = this.sensors.length - 1; i >= 0; i--) {
+            let sensor = this.sensors[i];
+            let url = this.url;
+            this.log("Setting up: " + sensor.name);
 
-		if (this.service == "Thermostat") {
+            this.log("service: " + sensor.service)
+            this.log("name: " + sensor.name)
+            newService = new Service[sensor.service](sensor.name);
+            newService.getCharacteristic(Characteristic[sensor.characteristic])
+                .on('get', function(callback) {
+                    console.log(sensor.name + " Triggered");
+                    superagent.get(url).end(function(err, res) {
+                        if (res && res.body[sensor.field]) {
+                            callback(null, res.body[sensor.field]);
+                        } else {
+                            callback(null, null);
+                        }
+                    });
+                })
+            services.push(newService);
+        }
 
-      var services = [informationService];
-
-      for (var i = this.sensors.length - 1; i >= 0; i--) {
-        let sensor = this.sensors[i];
-        let url = this.url;
-        this.log("Setting up: " + sensor.name);
-
-        newService = new Service[sensor.service](sensor.name);
-        newService.getCharacteristic(Characteristic[sensor.caractheristic])
-          .on('get', function(callback) {
-            console.log(sensor.name + " Triggered");
-            superagent.get(url).end(function(err, res){
-              if (res && res.body[sensor.field]) {
-                callback(null, res.body[sensor.field]);
-              } else {
-                callback(null, null);
-              }
-            });
-          })
-        services.push(newService);
-      }
-
-			return services;
-		}
-	}
+        return services;
+    }
 };
