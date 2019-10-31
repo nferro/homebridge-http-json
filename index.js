@@ -1,82 +1,73 @@
 var Service, Characteristic;
 var superagent = require('superagent');
 
-module.exports = function(homebridge){
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
+module.exports = function(homebridge) {
+    Service = homebridge.hap.Service;
+    Characteristic = homebridge.hap.Characteristic;
+    homebridge.registerAccessory("homebridge-http-json", "http-json", HttpAccessory);
 }
 
 function HttpAccessory(log, config) {
-	this.log = log;
+    this.log = log;
 
-	this.url = config["url"];
-	this.service = config["service"];
-	this.name = config["name"];
-  this.sensors = config["sensors"];
+    this.url = config["url"];
+    this.service = config["service"];
+    this.name = config["name"];
+    this.sensors = config["sensors"];
+    this.log(config)
 }
 
 HttpAccessory.prototype = {
-  getTemperature: function(callback) {
-    this.log("Temperature Triggered");
+    getServices: function() {
+        this.log("getServices")
+        var informationService = new Service.AccessoryInformation();
 
-    superagent.get(this.url).end(function(err, res){
-      if (res.body.temperature) {
-        callback(null, res.body['temperature']);
-      } else {
-        callback(null, null);
-      }
-    });
-  },
-  getHumidity: function(callback) {
-    this.log("Humidity Triggered");
-    superagent.get(this.url).end(function(err, res){
-      if (res.body.humidity) {
-        callback(null, res.body['humidity']);
-      } else {
-        callback(null, null);
-      }
-    });
-  },
-	identify: function(callback) {
-		this.log("Identify requested!");
-		callback();
-	},
+        informationService
+            .setCharacteristic(Characteristic.Manufacturer, "Chenny Du")
+            .setCharacteristic(Characteristic.Model, "HTTP JSON")
+            .setCharacteristic(Characteristic.SerialNumber, "whatTheFuck?")
 
-	getServices: function() {
-    this.log("getServices")
-    var informationService = new Service.AccessoryInformation();
+        this.log("Load Service: " + this.service)
+        var services = [informationService];
 
-    informationService
-      .setCharacteristic(Characteristic.Manufacturer, "Nuno Ferro")
-      .setCharacteristic(Characteristic.Model, "HTTP JSON")
-      .setCharacteristic(Characteristic.SerialNumber, "ACME#1")
+        // console.log(this.sensors)
+        for (var i = this.sensors.length - 1; i >= 0; i--) {
+            let sensor = this.sensors[i];
+            let url = this.url;
+            this.log("Setting up: " + sensor.name);
 
-		if (this.service == "Thermostat") {
+            this.log("service: " + sensor.service)
+            this.log("name: " + sensor.name)
+            newService = new Service[sensor.service](sensor.name);
+            for (var x = sensor.characteristics.length - 1; x >= 0; x--) {
+                console.log("Loading: " + sensor.characteristics[x].characteristic);
+                // console.log(sensor.characteristics[x]);
 
-      var services = [informationService];
+                let characteristic = sensor.characteristics[x].characteristic;
+                newService.getCharacteristic(Characteristic[sensor.characteristics[x].characteristic])
+                    .on('get', function(callback) {
+                        console.log(sensor.name + " Triggered");
+                        // console.log(sensor);
+                        // console.log(sensor.characteristics[i].characteristic)
 
-      for (var i = this.sensors.length - 1; i >= 0; i--) {
-        let sensor = this.sensors[i];
-        let url = this.url;
-        this.log("Setting up: " + sensor.name);
+                        superagent.get(url).end(function(err, res) {
+                            let characteristicField = sensor.characteristics.filter(function(y) {return y.characteristic === characteristic;})[0].field
+                            // console.log("Get characteristic: " + characteristic);
+                            // console.log("Get value: " + characteristicField);
 
-        newService = new Service[sensor.service](sensor.name);
-        newService.getCharacteristic(Characteristic[sensor.caractheristic])
-          .on('get', function(callback) {
-            console.log(sensor.name + " Triggered");
-            superagent.get(url).end(function(err, res){
-              if (res && res.body[sensor.field]) {
-                callback(null, res.body[sensor.field]);
-              } else {
-                callback(null, null);
-              }
-            });
-          })
-        services.push(newService);
-      }
+                            if (res && res.body[characteristicField]) {
+                                callback(null, res.body[characteristicField]);
+                            } else {
+                                callback(null, null);
+                            }
 
-			return services;
-		}
-	}
+                        });
+                    })
+
+            }
+            services.push(newService);
+        }
+
+        return services;
+    }
 };
