@@ -1,20 +1,62 @@
-{
-	"accessory": "http-json",
-	"service": "Thermostat",
-	"name": "ESP Sala",
-	"url": "http://192.168.1.85/readings",
-	"sensors" : [
-		{
-			"name": "Temperature",
-			"service": "TemperatureSensor",
-			"caractheristic": "CurrentTemperature",
-			"field": "temperature"
-		},
-		{
-			"name": "Humidity",
-			"service": "HumiditySensor",
-			"caractheristic": "CurrentRelativeHumidity",
-			"field": "humidity"
-		}
-	]
-}
+    "accessories": [
+        {
+            "accessory": "http-json",
+            "service": "Thermostat",
+            "name": "BME280_SGP30",
+            "url": "http://192.168.2.141/bme280_sgp30",
+            "sensors": [
+                {
+                    "name": "Temperature",
+                    "service": "TemperatureSensor",
+                    "characteristics": [
+                        {
+                            "characteristic": "CurrentTemperature",
+                            "field": "temperature"
+                        }
+                    ]
+                },
+                {
+                    "name": "Humidity",
+                    "service": "HumiditySensor",
+                    "characteristics": [
+                        {
+                            "characteristic": "CurrentRelativeHumidity",
+                            "field": "humidity"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "accessory": "http-json",
+            "service": "AirQualitySensor",
+            "name": "Air Quality Sensor",
+            "url": "http://192.168.2.141/bme280_sgp30",
+            "sensors": [
+                {
+                    "name": "Carbon Dioxide Sensor",
+                    "service": "CarbonDioxideSensor",
+                    "characteristics": [
+                        {
+                            "characteristic": "CarbonDioxideDetected",
+                            "field": "detected"
+                        },
+                        {
+                            "characteristic": "CarbonDioxideLevel",
+                            "field": "eCO2"
+                        }
+                    ]
+                },
+                {
+                    "name": "TVOC Sensor",
+                    "service": "AirQualitySensor",
+                    "characteristics": [
+                        {
+                            "characteristic": "VOCDensity",
+                            "field": "TVOC"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
